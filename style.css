@@ -4,20 +4,20 @@
 }
 
 body {
-    background-color: #333;
+    background: linear-gradient(to top right,#8ae8ff,#ebfbff 60%);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    font-size: 7.5vmin;
+    font-size: 6.5vmin;
 }
 
 #game-board {
     display: grid;
     grid-template-columns: repeat(var(--grid-size), var(--cell-size));
     grid-template-rows: repeat(var(--grid-size), var(--cell-size));
-    background-color: #CCC;
+    /*background-color: #CCC;*/
     gap: var(--cell-gap);
     border-radius: 1vmin;
     padding: var(--cell-gap);
@@ -25,7 +25,7 @@ body {
 }
 
 .cell {
-    background-color: #AAA;
+    background-color: cadetblue;
     border-radius: 1vmin;
 }
 
@@ -40,8 +40,8 @@ body {
     top: calc(var(--y) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap));
     left: calc(var(--x) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap));
     font-weight: bold;
-    background-color: hsl(200, 50%, var(--background-lightness));
-    color: hsl(200, 25%, var(--text-lightness));
+    background-color: hsl(100, 60%,var(--background-lightness));
+    color: hsl(black, 50%, var(--text-lightness));
     animation: show 200ms ease-in-out;
     transition: 100ms ease-in-out;
 }

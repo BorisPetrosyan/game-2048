@@ -1,7 +1,7 @@
 
 const GRID_SIZE = 4
-const CELL_SIZE = 20
-const CELL_GAP = 2
+const CELL_SIZE = 15
+const CELL_GAP = 1
 
 
 export  default class Grid {
@@ -11,21 +11,37 @@ export  default class Grid {
         gridElement.style.setProperty("--grid-size", GRID_SIZE)
         gridElement.style.setProperty("--cell-size", `${CELL_SIZE}vmin`)
         gridElement.style.setProperty("--cell-gap", `${CELL_GAP}vmin`)
-        this.cells = creatCellElements(gridElement).map((cellElements, index) => {
-            return new Cell(cellElements,index % GRID_SIZE,Math.floor(index / GRID_SIZE))
+        this.#cells = createCellElements(gridElement).map((cellElement, index) => {
+            return new Cell(
+                cellElement,
+                index % GRID_SIZE,
+                Math.floor(index / GRID_SIZE)
+            )
         })
+    }
+
+    get cells() {
+        return this.#cells
+    }
+
+    get cellsByRow() {
+        return this.#cells.reduce((cellGrid, cell) => {
+            cellGrid[cell.y] = cellGrid[cell.y] || []
+            cellGrid[cell.y][cell.x] = cell
+            return cellGrid
+        }, [])
     }
 
     get cellsByColumn() {
         return this.#cells.reduce((cellGrid, cell) => {
             cellGrid[cell.x] = cellGrid[cell.x] || []
-            cellGrid[cell.x] = cell
+            cellGrid[cell.x][cell.y] = cell
             return cellGrid
-        },[])
+        }, [])
     }
 
     get #emptyCells() {
-        return this.cells.filter(cell => cell.tile == null)
+        return this.#cells.filter(cell => cell.tile == null)
     }
 
     randomEmptyCell() {
@@ -41,7 +57,7 @@ class Cell {
     #x
     #y
     #tile
-
+    #mergeTile
     constructor(cellElement,x,y) {
         this.#cellElement = cellElement
         this.#x = x
@@ -62,15 +78,33 @@ class Cell {
         this.#tile.x =this.#x
         this.#tile.y =this.#y
     }
-
-    canAccept(tile) {
-        return (this.tile == null ||
-            (this.mergeTile == null && this.tile.value === tile.value))
+    get mergeTile() {
+        return this.#mergeTile
     }
 
+    set mergeTile(value) {
+        this.#mergeTile = value
+        if (value == null) return
+        this.#mergeTile.x = this.#x
+        this.#mergeTile.y = this.#y
+    }
+
+    canAccept(tile) {
+        return (
+            this.tile == null ||
+            (this.mergeTile == null && this.tile.value === tile.value)
+        )
+    }
+
+    mergeTiles() {
+        if(this.tile == null || this.mergeTile == null) return
+        this.tile.value = this.tile.value + this.mergeTile.value
+        this.mergeTile.remove()
+        this.mergeTile = null
+    }
 }
 
-function creatCellElements(gridElement) {
+function createCellElements(gridElement) {
     const cells = []
     for(let i = 0; i < GRID_SIZE* GRID_SIZE; i++) {
         const cell = document.createElement('div')
